@@ -41,7 +41,7 @@ local config = {
 ---@class saraMover
 local saraMover = { _VERSION = '1.0', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
-local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
+local saraCore = require('saraCore-src') or assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
 ---Localized Functions
 local type = _G.type
@@ -312,7 +312,7 @@ local function execute(command)
         check_connection()
 
         --- Take
-        if findItem(command.id) == 0 then
+        if findItem(command.id) ~= 200 then
             if not winside(fworld) then
                 while not warp(fworld, fid) do
                     sleep(5000)
@@ -321,7 +321,7 @@ local function execute(command)
                 sleep(2500)
             end
 
-            if not caches.TAKE_TILES then caches.TAKE_TILES = scan(command, 'TAKE') end
+            if #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
 
             caches.STATUS = 'TAKING_ITEMS'
 
@@ -353,11 +353,11 @@ local function execute(command)
                 sleep(2500)
             end
 
-            if not caches.STORE_TILES then caches.STORE_TILES = scan(command, 'STORE') end
+            if #caches.STORE_TILES == 0 then caches.STORE_TILES = scan(command, 'STORE') end
 
             caches.STATUS = 'STORING_ITEMS'
 
-            local stored, count = store(command, tworld, tid, caches.STORE_TILES)
+            local _, count = store(command, tworld, tid, caches.STORE_TILES)
 
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
         end
