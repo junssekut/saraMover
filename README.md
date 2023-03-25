@@ -4,7 +4,7 @@ Move your desired items with automation!
 
 ---
 
-![saraMover](img/saraMover.png?raw=true, 'saraMover')
+<p align = 'center'> <img src = 'img/saraMover.png' alt = 'saraMover' width = '160' height = '160' title = 'saraMover' style = 'display: block; margin 0 auto' /> </p>
 
 If you need help implementing this, feels free to dm me at discord junssekut#4964 or join my [discord server](https://dsc.gg/machseeman).
 
