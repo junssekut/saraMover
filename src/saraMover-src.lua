@@ -39,7 +39,7 @@ local config = {
 ---@field public data number
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.1', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.0a', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = require('saraCore-src') or assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
@@ -116,7 +116,7 @@ local function scan(command, scan_option)
 
     if scan_option == 'TAKE' and command.command == 'wtw' then return tiles end
 
-    if scan_option == 'STORE' and command.command:sub(0, 1) == 'w' then
+    if scan_option == 'STORE' and command.command:sub(-1) == 'w' then
         for x = 0, 99 do
             for y = 0, 53 do
                 local tile = getTile(x, y)
