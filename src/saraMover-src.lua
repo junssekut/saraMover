@@ -236,6 +236,7 @@ local function store(command, tworld, tid, tiles)
     if #tiles == 0 then error('Storing Error: Empty tiles') end
 
     local store_option = command.command:sub(-1)
+    local store_count = findItem(command.id)
 
     for i = 1, #tiles do
         if findItem(command.id) == 0 then break end
@@ -259,7 +260,7 @@ local function store(command, tworld, tid, tiles)
         end
     end
 
-    return findItem(command.id) == 0
+    return findItem(command.id) == 0, store_count
 end
 
 ---
