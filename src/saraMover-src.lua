@@ -170,7 +170,7 @@ local function scan(command, scan_option)
             for y = 0, 53 do
                 local tile = getTile(x, y)
 
-                if tile and tile.fg == 2978 and (tile.data == 0 or tile.data == command.item) then
+                if tile and tile.fg == 2978 and (command.command == 'vtw' and (tile.data == command.item) or (command.command == 'vtv' and (tile.data == 0 or tile.data == command.item) or false)) then
                     tinsert(tiles, { x = x, y = y, data = tile.data } --[[@as TileScanned]])
                 end
             end
