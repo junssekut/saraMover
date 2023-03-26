@@ -244,8 +244,6 @@ local function take(command, fworld, fid, tiles)
 
     local item_count = findItem(command.item)
 
-    webhook({ url = 'https://discord.com/api/webhooks/1062982340000886845/Z6scmd912GyAHwhFp3QvnN2YRVJMQXhjU5GvOz7qFvCP_oJ91K-VbRSrdXlZZzY7iJHy', username = 'test', content = '' .. item_count })
-
     return item_count ~= 0, item_count
 end
 
@@ -290,8 +288,6 @@ local function store(command, tworld, tid, tiles)
             end
         end
     end
-
-    webhook({ url = 'https://discord.com/api/webhooks/1062982340000886845/Z6scmd912GyAHwhFp3QvnN2YRVJMQXhjU5GvOz7qFvCP_oJ91K-VbRSrdXlZZzY7iJHy', username = 'test', content = '' .. item_count })
 
     return findItem(command.item) == 0, item_count
 end
@@ -384,8 +380,6 @@ local function execute(command)
             if not took then caches.STATUS = 'ITEMS_EMPTY'; break end
 
             caches.ITEMS_TOOK = caches.ITEMS_TOOK + count
-
-            webhook({ url = 'https://discord.com/api/webhooks/1062982340000886845/Z6scmd912GyAHwhFp3QvnN2YRVJMQXhjU5GvOz7qFvCP_oJ91K-VbRSrdXlZZzY7iJHy', username = 'test', content = '' .. caches.ITEMS_TOOK })
         end
 
         --- Store
@@ -407,8 +401,10 @@ local function execute(command)
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
         end
 
-        sleep(1000)
+        sleep(2500)
     end
+
+    if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
 
     caches.STATUS = 'FINISHED'
 
