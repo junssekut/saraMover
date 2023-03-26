@@ -225,7 +225,7 @@ local function take(command, fworld, fid, tiles)
     if take_option == 'v' then
         tassertv('take<tiles>', tiles, 'table')
 
-        if #tiles == 0 then error('Take Error: Tiles empty') end
+        if #tiles == 0 then return false, -1 end
 
         for i = 1, #tiles do
             if findItem(command.item) == 200 then break end
@@ -378,7 +378,7 @@ local function execute(command)
             while true do
                 took, count = take(command, fworld, fid, caches.TAKE_TILES)
 
-                if took or take_tries > 3 then break end
+                if took or count == -1 or take_tries > 3 then break end
 
                 take_tries = take_tries + 1
 
@@ -466,6 +466,8 @@ function saraMover.init(config_value)
             if error_logs then error_logs:write(sformat('[ERROR][%s]: %s\n', ldate():fmt('%X'), 'Execute error: At command `' .. command.command .. '` ( index ' .. i .. ' ) ' .. execute_cache)); error_logs:close() end
         end
     end
+
+    if #result_caches == 0 then return end
 
     local fields = {
         { name = 'Information', value = '', inline = true },
