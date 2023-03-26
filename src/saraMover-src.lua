@@ -133,7 +133,7 @@ local function scan(command, scan_option)
             local white_door = getwdoor()
 
             for x = 1, 98 do
-                for y = white_door.y - 2, white_door do
+                for y = white_door.y - 2, white_door.y do
                     if getTile(x, y).flags == 0 and getTile(x + 1, y).flags == 0 then
                         tinsert(tiles, { x = x, y = y })
                     end
