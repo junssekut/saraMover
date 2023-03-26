@@ -42,7 +42,7 @@ local config = {
 ---@field public data number
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.0d', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.0e', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
@@ -70,6 +70,7 @@ local vend = saraCore.PacketHandler.vend --[[@as function]]
 local tvend = saraCore.PacketHandler.tvend --[[@as function]]
 local nformat = saraCore.NumberUtils.nformat --[[@as function]]
 local getwdoor = saraCore.TileHandler.getWhiteDoor --[[@as function]]
+local ldate = saraCore.Date --[[@as function|table]]
 local idatabase = saraCore.ItemDatabase --[[@as table]]
 local isprites = saraCore.ItemSprites --[[@as table]]
 
@@ -419,7 +420,7 @@ local function execute(command)
                 { name = 'Stored', value = sformat('%s x%s', (command.command:sub(-1) == 'w' and isprites.GLOBE or isprites[2978]), nformat(caches.ITEMS_STORED)), inline = true }
             },
             footer = saraCore.WebhookHandler.getDefaultFooter(),
-            timestamp = saraCore.LuaDate(true):fmt('${iso}%z')
+            timestamp = ldate(true):fmt('${iso}%z')
         })
     })
 
