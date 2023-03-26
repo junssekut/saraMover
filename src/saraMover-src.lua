@@ -41,6 +41,14 @@ local config = {
 ---@field public y number
 ---@field public data number
 
+---@class ExecuteCaches
+---@field public STATUS ExecuteStatus
+---@field public TAKE_TILES TileScanned[]
+---@field public STORE_TILES TileScanned[]
+---@field public ITEMS_TOOK number
+---@field public ITEMS_STORED number
+---@field public WEBHOOK_DATA WebhookData
+
 ---@class saraMover
 local saraMover = { _VERSION = '1.0e', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
@@ -408,11 +416,11 @@ local function execute(command)
 
     caches.STATUS = 'FINISHED'
 
-    webhook({
+    caches.WEBHOOK_DATA = {
         url = config.webhook,
         username = 'saraMover',
-        avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/img/saraMover.png',
-        embed = jencode({
+        avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/main/img/saraMover.png',
+        rawembed = {
             title = sformat('%s -> %s', fworld, tworld),
             color = 4408131,
             fields = {
@@ -422,9 +430,14 @@ local function execute(command)
             },
             footer = saraCore.WebhookHandler.getDefaultFooter(),
             timestamp = ldate(true):fmt('${iso}')
-        })
-    })
+        }
+    }
 
+    caches.WEBHOOK_DATA.embed = jencode(caches.WEBHOOK_DATA.embed)
+
+    webhook(caches.WEBHOOK_DATA)
+
+    return caches
 end
 
 ---
@@ -436,13 +449,59 @@ function saraMover.init(config_value)
 
     config = config_value
 
+    ---@type ExecuteCaches[]
+    local result_caches = {}
+
     for i = 1, #config.commands do
         local command = config.commands[i]
 
         validateCommand(command)
 
-        execute(command)
+        local execute_cache = execute(command)
+
+        tinsert(result_caches, execute_cache)
     end
+
+    local fields = {
+        { name = 'Information', value = '', inline = true },
+        { name = 'Total', value = '', inline = true },
+        { name = 'Status', value = '', inline = true }
+    }
+
+    for i = 1, #result_caches do
+        local cache = result_caches[i]
+
+        local fworld, tworld = cache.WEBHOOK_DATA.rawembed.title:match('(.+) %-> (.+)')
+        local tsprite, tstored = cache.WEBHOOK_DATA.rawembed.fields[3].value:match('<(.+)> (x.+)')
+
+        local cache_information = sformat('%s %s -> %s %s',
+            cache.WEBHOOK_DATA.rawembed.fields[2].value:match('(<.+>)'), fworld,
+            tsprite, tworld
+        )
+
+        local isprite, iname = cache.WEBHOOK_DATA.rawembed.fields[1].value:match('<(.+)> (.+)')
+
+        local total = sformat('%s x%s %s',
+            isprite, tstored, iname
+        )
+
+        fields[1].value = fields[1].value .. cache_information .. '\n'
+        fields[2].value = fields[2].value .. total .. '\n'
+        fields[3].value = fields[3].value .. cache.STATUS .. '\n'
+    end
+
+    webhook({
+        url = result_caches[1].WEBHOOK_DATA.url,
+        username = result_caches[1].WEBHOOK_DATA.username,
+        avatar = result_caches[1].WEBHOOK_DATA.avatar,
+        embed = jencode({
+            title = sformat('MOVE SUMMARY'),
+            color = 4408131,
+            fields = fields,
+            footer = saraCore.WebhookHandler.getDefaultFooter(),
+            timestamp = ldate(true):fmt('${iso}')
+        }) --[[@as string]]
+    })
 end
 
 return saraMover
