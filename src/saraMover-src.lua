@@ -1,13 +1,15 @@
 ---@class config
 local config = {
     commands = {
-        { command = 'wtw', from = '', to = '', id = 4585, background = 880 },
-        { command = 'vtw', from = '', to = '', id = 4585, background = 880 },
-        { command = 'wtv', from = '', to = '', id = 4585 },
-        { command = 'vtv', from = '', to = '', id = 4585 },
+        { command = 'wtw', from = '', to = '', item = 4585, background = 880 },
+        { command = 'vtw', from = '', to = '', item = 4585, background = 880 },
+        { command = 'wtv', from = '', to = '', item = 4585 },
+        { command = 'vtv', from = '', to = '', item = 4585 },
     },
 
-    webhook = ''
+    id = 'doorid',
+
+    webhook = 'https://discord.com/api/webhooks/etc'
 }
 
 ---@alias CommandOption
@@ -21,7 +23,8 @@ local config = {
 ---| '"STORE"' # Scan option for storing items
 
 ---@alias ExecuteStatus
----| "'RUNNING'" # Running
+---| "'STARTING'" # Moving items
+---| "'FINISHED'" # Moved items
 ---| "'ITEMS_EMPTY'" # Empty items execution
 ---| "'TAKING_ITEMS'" # Taking items
 ---| "'STORING_ITEMS'" # Storing items
@@ -30,7 +33,7 @@ local config = {
 ---@field public command CommandOption
 ---@field public from string
 ---@field public to string
----@field public id number
+---@field public item number
 ---@field public background? number
 
 ---@class TileScanned
@@ -39,19 +42,22 @@ local config = {
 ---@field public data number
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.0a', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.0b', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
 ---Localized Functions
 local type = _G.type
-local error = _G.error
 local tinsert = _G.table.insert
 local sformat = _G.string.format
 local mfloor = _G.math.floor
+local rawerror = _G.error
+
+local error = function (message) rawerror(message, 0) end
 
 local getTile = _G.getTile
 
+local jencode = saraCore.Json.encode --[[@as function]]
 local tcontains = saraCore.TableUtils.contains --[[@as function]]
 local tassertv = saraCore.AssertUtils.tassertv --[[@as function]]
 local warp = saraCore.WorldHandler.warp --[[@as function]]
@@ -62,6 +68,10 @@ local full = saraCore.TileHandler.full --[[@as function]]
 local drop = saraCore.InventoryHandler.drop --[[@as function]]
 local vend = saraCore.PacketHandler.vend --[[@as function]]
 local tvend = saraCore.PacketHandler.tvend --[[@as function]]
+local nformat = saraCore.NumberUtils.nformat --[[@as function]]
+local getwdoor = saraCore.TileHandler.getWhiteDoor --[[@as function]]
+local idatabase = saraCore.ItemDatabase --[[@as table]]
+local isprites = saraCore.ItemSprites --[[@as table]]
 
 ---
 ---Validate a command and handle the throwing errors
@@ -98,6 +108,8 @@ local function validateCommand(command)
     end
 
     if command.command:sub(-1) == 'w' then
+        if not command.background then command.background = 0 end
+
         validationCheck('background', command.background, type(default_command.background))
     end
 end
@@ -117,6 +129,20 @@ local function scan(command, scan_option)
     if scan_option == 'TAKE' and command.command == 'wtw' then return tiles end
 
     if scan_option == 'STORE' and command.command:sub(-1) == 'w' then
+        if command.background == 0 then
+            local white_door = getwdoor()
+
+            for x = 1, 98 do
+                for y = white_door.y - 2, white_door do
+                    if getTile(x, y).flags == 0 and getTile(x + 1, y).flags == 0 then
+                        tinsert(tiles, { x = x, y = y })
+                    end
+                end
+            end
+
+            return tiles
+        end
+
         for x = 0, 99 do
             for y = 0, 53 do
                 local tile = getTile(x, y)
@@ -167,7 +193,7 @@ local function take(command, fworld, fid, tiles)
         for _, object in pairs(getObjects()) do
             if findItem(object.id) == 200 then break end
 
-            if object.id == command.id then
+            if object.id == command.item then
                 local object_x, object_y = mfloor(object.x * ( 1 / 32 )), mfloor(object.y * ( 1 / 32 ))
 
                 if not findPath(object_x, object_y) then
@@ -196,28 +222,30 @@ local function take(command, fworld, fid, tiles)
         if #tiles == 0 then error('Take Error: Tiles empty') end
 
         for i = 1, #tiles do
-            if findItem(command.id) == 200 then break end
+            if findItem(command.item) == 200 then break end
 
             local tile = tiles[i] ---@diagnostic disable-line: need-check-nil
 
-            if tile and tile.data == command.id then
+            if tile and tile.data == command.item then
                 if not findPath(tile.x, tile.y) then
                     sleep(500)
                 else
                     sleep(200)
 
+                    check_connection(fworld, fid, tile.x, tile.y, true)
+
                     tvend(tile.x, tile.y)
 
-                    if findItem(command.id) == 200 then break end
+                    if findItem(command.item) == 200 then break end
                 end
             end
 
         end
 
-        take_count = findItem(command.id)
+        take_count = findItem(command.item)
     end
 
-    return findItem(command.id) ~= 0, take_count
+    return findItem(command.item) ~= 0, take_count
 end
 
 ---
@@ -236,10 +264,10 @@ local function store(command, tworld, tid, tiles)
     if #tiles == 0 then error('Storing Error: Empty tiles') end
 
     local store_option = command.command:sub(-1)
-    local store_count = findItem(command.id)
+    local store_count = findItem(command.item)
 
     for i = 1, #tiles do
-        if findItem(command.id) == 0 then break end
+        if findItem(command.item) == 0 then break end
 
         local tile = tiles[i]
         local x, y = tile.x, tile.y
@@ -252,15 +280,17 @@ local function store(command, tworld, tid, tiles)
             else
                 sleep(200)
 
-                if store_option == 'w' then drop(command.id) end
-                if store_option == 'v' then vend(command.id, x, y) end
+                check_connection(tworld, tid, x, y, true)
 
-                if findItem(command.id) == 0 then break end
+                if store_option == 'w' then drop(command.item) end
+                if store_option == 'v' then vend(command.item, x, y) end
+
+                if findItem(command.item) == 0 then break end
             end
         end
     end
 
-    return findItem(command.id) == 0, store_count
+    return findItem(command.item) == 0, store_count
 end
 
 ---
@@ -291,7 +321,11 @@ local function execute(command)
             __newindex = function (table_value, key, value)
                 ---TODO: update webhook here
                 if key == 'STATUS' then
-                    webhook({ url = config.webhook, username = 'saraMover', content = 'Status update: ' .. value })
+                    local bot = getBot()
+
+                    webhook({ url = config.webhook, username = 'saraMover', content = sformat('[**%s**] %s: %s', bot.world, bot.name, value)})
+
+                    sleep(250)
                 end
 
                 protected_caches[key] = value
@@ -302,18 +336,23 @@ local function execute(command)
     setmetatable(caches, caches_meta)
 
     ---@type ExecuteStatus
-    caches.STATUS = 'RUNNING'
+    caches.STATUS = 'STARTING'
 
     local fworld, fid, tworld, tid = command.from, '', command.to, ''
 
     if fworld:find(':') then fworld, fid = fworld:match('(.+):(.+)') end
     if tworld:find(':') then tworld, tid = tworld:match('(.+):(.+)') end
 
+    if config.id and config.id ~= '' then
+        if fid == '' then fid = config.id end
+        if tid == '' then tid = config.id end
+    end
+
     while true do
         check_connection()
 
         --- Take
-        if findItem(command.id) ~= 200 then
+        if findItem(command.item) ~= 200 then
             if not winside(fworld) then
                 while not warp(fworld, fid) do
                     sleep(5000)
@@ -345,7 +384,7 @@ local function execute(command)
         end
 
         --- Store
-        if findItem(command.id) > 0 then
+        if findItem(command.item) > 0 then
             if not winside(tworld) then
                 while not warp(tworld, tid) do
                     sleep(5000)
@@ -366,7 +405,23 @@ local function execute(command)
         sleep(1000)
     end
 
+    caches.STATUS = 'FINISHED'
 
+    webhook({
+        url = config.webhook,
+        username = 'saraMover',
+        embed = jencode({
+            title = sformat('%s -> %s', fworld, tworld),
+            color = 4408131,
+            fields = {
+                { name = 'Item Name', value = sformat('%s %s', isprites[command.item] or isprites.BOX, idatabase[command.item]), inline = true },
+                { name = 'Taken', value = sformat('%s x%s', (command.command:sub(0, 1) == 'w' and isprites.GLOBE or isprites[2978]), nformat(caches.ITEMS_TOOK)), inline = true },
+                { name = 'Stored', value = sformat('%s x%s', (command.command:sub(-1) == 'w' and isprites.GLOBE or isprites[2978]), nformat(caches.ITEMS_STORED)), inline = true }
+            },
+            footer = saraCore.WebhookHandler.getDefaultFooter(),
+            timestamp = saraCore.LuaDate(true):fmt('${iso}%z')
+        })
+    })
 
 end
 
