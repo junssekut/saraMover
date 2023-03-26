@@ -409,12 +409,12 @@ local function execute(command)
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
         end
 
-        sleep(2500)
+        sleep(1000)
     end
 
     if #caches.ITEMS_TOOK > #caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
 
-    if #caches.ITEMS_STORED ~= 0 and caches.STATUS == 'FINISHED' then caches.STATUS = 'FINISHED' end
+    if #caches.ITEMS_STORED ~= 0 then caches.STATUS = 'FINISHED' end
 
     caches.WEBHOOK_DATA = {
         url = config.webhook,
