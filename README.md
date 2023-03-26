@@ -24,13 +24,13 @@ There is currently 4 different methods of moving items, such as:
 | `vtv`   | Vend to Vend   | Move your items from vending machines to vending machines. |
 
 You can use these methods and they will work even if your vending is empty, they will insert the item into the vending and adapt to how it's designed to work correctly. However, there are specifications to use some of these methods:
-| Key        | Expected Type                                                                 | Required                                        | Description                                               |
-|------------|-------------------------------------------------------------------------------|-------------------------------------------------|-----------------------------------------------------------|
-| command    | string, see above for command list                                            | Yes                                             | The command to make your bot move your items as you wish. |
-| from       | string, support with or without door id ( `worldname` or `worldname:doorid` ) | Yes                                             | The world to take your items from.                        |
-| to         | string, support with or without door id ( `worldname` or `worldname:doorid` ) | Yes                                             | The world to store your items to.                         |
-| item       | number                                                                        | Yes                                             | The item id to move.                                      |
-| background | number, support no background ( `0` )                                         | No, By default if you use `wtw` or `vtw` is `0` | The item id of your background tiles to drop the item to. |
+| Key          | Expected Type | Required | Description                                                                                                                                                                  |
+|--------------|---------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `command`    | string        | Yes      | The command to make your bot move your items as you wish, see above for command list.                                                                                        |
+| `from`       | string        | Yes      | The world to take your items from, support with or without door id ( `worldname` or `worldname:doorid` ).                                                                    |
+| `to`         | string        | Yes      | The world to store your items to, support with or without door id ( `worldname` or `worldname:doorid` ).                                                                     |
+| `item`       | number        | Yes      | The item id to move.                                                                                                                                                         |
+| `background` | number        | No       | The item id of your background tiles to drop the item to, by default if you use the command `wtw` or `vtw` it will use no background if you don't specify the background id. |
 
 > Creating your custom config:
 ```lua

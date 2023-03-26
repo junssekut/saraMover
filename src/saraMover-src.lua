@@ -99,7 +99,7 @@ local function validateCommand(command)
 
     if not tcontains({ 'wtw', 'vtw', 'wtv', 'vtv' }, command.command) then error(sformat('Validation Error: Unknown command `%s`, available commands: wtw, vtw, wtv, vtv.', command.command)) end
 
-    local default_command = { command = '', from = '', to = '', id = 0, background = 0 }
+    local default_command = { command = '', from = '', to = '', item = 0, background = 0 }
 
     for k, v in pairs(command) do
         if not default_command[k] then error(sformat('Validation Error: Unknown key `%s`, mistype?', k)) end
