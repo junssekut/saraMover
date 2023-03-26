@@ -387,7 +387,7 @@ local function execute(command)
 
             if not took then caches.STATUS = 'ITEMS_EMPTY'; break end
 
-            caches.ITEMS_TOOK = caches.ITEMS_TOOK + count
+            caches.ITEMS_TOOK = caches.ITEMS_TOOK + (count == -1 and 0 or count)
         end
 
         --- Store
