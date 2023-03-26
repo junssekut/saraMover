@@ -10,8 +10,7 @@ If you need help implementing this, feels free to dm me at discord junssekut#496
 
 ## Output
 > The output of the script would be:
-
-Will be updated later.
+![output](img/output.png?raw=true 'Output')
 
 ## How To Use
 
