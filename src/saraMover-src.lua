@@ -433,9 +433,7 @@ local function execute(command)
         }
     }
 
-    caches.WEBHOOK_DATA.embed = jencode(caches.WEBHOOK_DATA.embed)
-
-    sleep(1000)
+    caches.WEBHOOK_DATA.embed = jencode(caches.WEBHOOK_DATA.rawembed)
 
     webhook(caches.WEBHOOK_DATA)
 
