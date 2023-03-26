@@ -465,6 +465,8 @@ function saraMover.init(config_value)
             local error_logs = io.open('error_logs.txt', 'a')
             if error_logs then error_logs:write(sformat('[ERROR][%s]: %s\n', ldate():fmt('%X'), 'Execute error: At command `' .. command.command .. '` ( index ' .. i .. ' ) ' .. execute_cache)); error_logs:close() end
         end
+
+        sleep(2500)
     end
 
     if #result_caches == 0 then return end
@@ -479,7 +481,7 @@ function saraMover.init(config_value)
         local cache = result_caches[i]
 
         local fworld, tworld = cache.WEBHOOK_DATA.rawembed.title:match('(.+) %-> (.+)')
-        local tsprite, tstored = cache.WEBHOOK_DATA.rawembed.fields[3].value:match('(<.+>) (x.+)')
+        local tsprite, tstored = cache.WEBHOOK_DATA.rawembed.fields[3].value:match('(<.+>) x(.+)')
 
         local cache_information = sformat('%s %s -> %s %s',
             cache.WEBHOOK_DATA.rawembed.fields[2].value:match('(<.+>)'), fworld,
