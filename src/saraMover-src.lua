@@ -50,7 +50,7 @@ local config = {
 ---@field public WEBHOOK_DATA WebhookData
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.0e', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.1', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
@@ -63,13 +63,18 @@ local rawerror = _G.error
 
 local error = function (message) rawerror(message, 0) end
 
+local getBot = _G.getBot
 local getTile = _G.getTile
+local getObjects = _G.getObjects
+local findPath = _G.findPath
+local findItem = _G.findItem
+local sleep = _G.sleep
+local webhook = _G.webhook
 
 local jencode = saraCore.Json.encode --[[@as function]]
 local tcontains = saraCore.TableUtils.contains --[[@as function]]
 local tassertv = saraCore.AssertUtils.tassertv --[[@as function]]
 local warp = saraCore.WorldHandler.warp --[[@as function]]
-local winside = saraCore.WorldHandler.isInside --[[@as function]]
 local pcollect = saraCore.PacketHandler.collect --[[@as function]]
 local check_connection = saraCore.Auth.c --[[@as function]]
 local full = saraCore.TileHandler.full --[[@as function]]
@@ -262,6 +267,7 @@ end
 ---@param tworld string
 ---@param tid string
 ---@param tiles TileScanned[]
+---@return boolean, number
 local function store(command, tworld, tid, tiles)
     tassertv('store<command>', command, 'table')
     tassertv('store<fworld>', tworld, 'string')
@@ -326,7 +332,6 @@ local function execute(command)
             end,
 
             __newindex = function (table_value, key, value)
-                ---TODO: update webhook here
                 if key == 'STATUS' then
                     local bot = getBot()
 
@@ -360,13 +365,11 @@ local function execute(command)
 
         --- Take
         if findItem(command.item) ~= 200 then
-            if not winside(fworld) then
-                while not warp(fworld, fid) do
-                    sleep(5000)
-                end
-
-                sleep(2500)
+            while not warp(fworld, fid) do
+                sleep(5000)
             end
+
+            sleep(2500)
 
             if #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
 
@@ -392,14 +395,12 @@ local function execute(command)
 
         --- Store
         if findItem(command.item) > 0 then
-            if not winside(tworld) then
-                while not warp(tworld, tid) do
-                    sleep(5000)
-                end
-
-                sleep(2500)
+            while not warp(tworld, tid) do
+                sleep(5000)
             end
 
+            sleep(2500)
+    
             if #caches.STORE_TILES == 0 then caches.STORE_TILES = scan(command, 'STORE') end
 
             caches.STATUS = 'STORING_ITEMS'
