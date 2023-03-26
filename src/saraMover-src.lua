@@ -42,7 +42,7 @@ local config = {
 ---@field public data number
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.0c', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.0d', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
