@@ -412,9 +412,9 @@ local function execute(command)
         sleep(2500)
     end
 
-    if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
+    if #caches.ITEMS_TOOK > #caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
 
-    if caches.ITEMS_STORED ~= 0 and caches.STATUS == 'FINISHED' then caches.STATUS = 'FINISHED' end
+    if #caches.ITEMS_STORED ~= 0 and caches.STATUS == 'FINISHED' then caches.STATUS = 'FINISHED' end
 
     caches.WEBHOOK_DATA = {
         url = config.webhook,
@@ -475,8 +475,8 @@ function saraMover.init(config_value)
 
     local fields = {
         { name = 'Information', value = '', inline = true },
-        { name = 'Total', value = '', inline = true },
-        { name = 'Status', value = '', inline = true }
+        { name = 'Total Moved', value = '', inline = true },
+        { name = 'Status Command', value = '', inline = true }
     }
 
     for i = 1, #result_caches do
