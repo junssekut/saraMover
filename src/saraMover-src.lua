@@ -187,7 +187,6 @@ local function take(command, fworld, fid, tiles)
     tassertv('take<fworld>', fworld, 'string')
     tassertv('take<fid>', fid, 'string')
 
-    local take_count = 0
     local take_option = command.command:sub(0, 1)
 
     if take_option == 'w' then
@@ -207,8 +206,6 @@ local function take(command, fworld, fid, tiles)
                     pcollect(object.oid, object.x, object.y)
 
                     sleep(200)
-
-                    take_count = take_count + object.count
 
                     if findItem(object.id) == 200 then break end
                 end
@@ -243,10 +240,11 @@ local function take(command, fworld, fid, tiles)
 
         end
 
-        take_count = findItem(command.item)
     end
 
-    return findItem(command.item) ~= 0, take_count
+    local item_count = findItem(command.item)
+
+    return item_count ~= 0, item_count
 end
 
 ---
@@ -265,7 +263,7 @@ local function store(command, tworld, tid, tiles)
     if #tiles == 0 then error('Storing Error: Empty tiles') end
 
     local store_option = command.command:sub(-1)
-    local store_count = findItem(command.item)
+    local item_count = findItem(command.item)
 
     for i = 1, #tiles do
         if findItem(command.item) == 0 then break end
@@ -291,7 +289,7 @@ local function store(command, tworld, tid, tiles)
         end
     end
 
-    return findItem(command.item) == 0, store_count
+    return findItem(command.item) == 0, item_count
 end
 
 ---
@@ -339,7 +337,7 @@ local function execute(command)
     ---@type ExecuteStatus
     caches.STATUS = 'STARTING'
 
-    local fworld, fid, tworld, tid = command.from, '', command.to, ''
+    local fworld, fid, tworld, tid = command.from:upper(), '', command.to:upper(), ''
 
     if fworld:find(':') then fworld, fid = fworld:match('(.+):(.+)') end
     if tworld:find(':') then tworld, tid = tworld:match('(.+):(.+)') end
