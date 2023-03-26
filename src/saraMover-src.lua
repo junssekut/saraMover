@@ -457,9 +457,14 @@ function saraMover.init(config_value)
 
         validateCommand(command)
 
-        local execute_cache = execute(command)
+        local executed, execute_cache = pcall(execute, command)
 
-        tinsert(result_caches, execute_cache)
+        if executed then
+            tinsert(result_caches, execute_cache)
+        else
+            local error_logs = io.open('error_logs.txt', 'a')
+            if error_logs then error_logs:write(sformat('[ERROR][%s]: %s\n', ldate():fmt('%X'), 'Execute error: At command `' .. command.command .. '` ( index ' .. i .. ' ) ' .. execute_cache)); error_logs:close() end
+        end
     end
 
     local fields = {
