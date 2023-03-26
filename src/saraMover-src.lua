@@ -411,6 +411,7 @@ local function execute(command)
     webhook({
         url = config.webhook,
         username = 'saraMover',
+        avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/img/saraMover.png',
         embed = jencode({
             title = sformat('%s -> %s', fworld, tworld),
             color = 4408131,
@@ -420,7 +421,7 @@ local function execute(command)
                 { name = 'Stored', value = sformat('%s x%s', (command.command:sub(-1) == 'w' and isprites.GLOBE or isprites[2978]), nformat(caches.ITEMS_STORED)), inline = true }
             },
             footer = saraCore.WebhookHandler.getDefaultFooter(),
-            timestamp = ldate(true):fmt('${iso}%z')
+            timestamp = ldate(true):fmt('${iso}')
         })
     })
 
