@@ -170,7 +170,7 @@ local function scan(command, scan_option)
             for y = 0, 53 do
                 local tile = getTile(x, y)
 
-                if tile and tile.fg == 2978 and (command.command == 'vtw' and (tile.data == command.item) or (command.command == 'vtv' and (tile.data == 0 or tile.data == command.item) or false)) then
+                if tile and tile.fg == 2978 and (command.command == 'vtw' and (tile.data == command.item) or ((command.command == 'vtv' or command.command == 'wtv') and (tile.data == 0 or tile.data == command.item) or false)) then
                     tinsert(tiles, { x = x, y = y, data = tile.data } --[[@as TileScanned]])
                 end
             end
@@ -468,6 +468,8 @@ function saraMover.init(config_value)
 
         sleep(2500)
     end
+
+    if #config.commands ~= #result_caches then error('An error occured, see errors_logs.txt') end
 
     if #result_caches == 0 then return end
 
