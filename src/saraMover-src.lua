@@ -414,7 +414,7 @@ local function execute(command)
 
     if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
 
-    caches.STATUS = 'FINISHED'
+    caches.STATUS = (caches.ITEMS_STORED == 0 and caches.STATUS == 'ITEMS_EMPTY') and 'ITEMS_EMPTY' or 'FINISHED'
 
     caches.WEBHOOK_DATA = {
         url = config.webhook,
@@ -479,22 +479,26 @@ function saraMover.init(config_value)
         local cache = result_caches[i]
 
         local fworld, tworld = cache.WEBHOOK_DATA.rawembed.title:match('(.+) %-> (.+)')
-        local tsprite, tstored = cache.WEBHOOK_DATA.rawembed.fields[3].value:match('<(.+)> (x.+)')
+        local tsprite, tstored = cache.WEBHOOK_DATA.rawembed.fields[3].value:match('(<.+>) (x.+)')
 
         local cache_information = sformat('%s %s -> %s %s',
             cache.WEBHOOK_DATA.rawembed.fields[2].value:match('(<.+>)'), fworld,
             tsprite, tworld
         )
 
-        local isprite, iname = cache.WEBHOOK_DATA.rawembed.fields[1].value:match('<(.+)> (.+)')
+        local isprite, iname = cache.WEBHOOK_DATA.rawembed.fields[1].value:match('(<.+>) (.+)')
 
         local total = sformat('%s x%s %s',
             isprite, tstored, iname
         )
 
+        local status = sformat('%s %s',
+            (cache.STATUS == 'FINISHED' and isprites.GROWTOPIA_YES or isprites.GROWTOPIA_NO), cache.STATUS
+        )
+
         fields[1].value = fields[1].value .. cache_information .. '\n'
         fields[2].value = fields[2].value .. total .. '\n'
-        fields[3].value = fields[3].value .. cache.STATUS .. '\n'
+        fields[3].value = fields[3].value .. status .. '\n'
     end
 
     webhook({
