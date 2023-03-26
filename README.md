@@ -57,7 +57,9 @@ local config = {
 local saraMover = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraMover/main/src/saraMover-src.lua'))())
 
 --- Initialize with your custom config!
-saraMover.init(config)
+local status, message = pcall(saraMover.init, config)
+
+if not status then error('An error occured, please see error_logs.txt\n' .. message) end
 ```
 
 > Add this code inside your script if you want it offline or locally ( not recommended, since you won't get any updates or fixes ):
@@ -66,5 +68,7 @@ saraMover.init(config)
 local saraMover = require('saraMover')
 
 --- Initialize with your custom config!
-saraMover.init(config)
+local status, message = pcall(saraMover.init, config)
+
+if not status then error('An error occured, please see error_logs.txt\n' .. message) end
 ```

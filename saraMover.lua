@@ -16,4 +16,6 @@ local config = {
 
 local saraMover = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraMover/main/src/saraMover-src.lua'))())
 
-saraMover.init(config)
+local status, message = pcall(saraMover.init, config)
+
+if not status then error('An error occured, please see error_logs.txt\n' .. message) end
