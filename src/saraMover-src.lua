@@ -414,7 +414,7 @@ local function execute(command)
 
     if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
 
-    caches.STATUS = (caches.ITEMS_STORED == 0 and caches.STATUS == 'ITEMS_EMPTY') and 'ITEMS_EMPTY' or 'FINISHED'
+    if caches.ITEMS_STORED ~= 0 and caches.STATUS == 'FINISHED' then caches.STATUS = 'FINISHED' end
 
     caches.WEBHOOK_DATA = {
         url = config.webhook,
