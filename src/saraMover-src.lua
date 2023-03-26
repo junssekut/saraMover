@@ -435,6 +435,8 @@ local function execute(command)
 
     caches.WEBHOOK_DATA.embed = jencode(caches.WEBHOOK_DATA.embed)
 
+    sleep(1000)
+
     webhook(caches.WEBHOOK_DATA)
 
     return caches
@@ -463,7 +465,7 @@ function saraMover.init(config_value)
             tinsert(result_caches, execute_cache)
         else
             local error_logs = io.open('error_logs.txt', 'a')
-            if error_logs then error_logs:write(sformat('[ERROR][%s]: %s\n', ldate():fmt('%X'), 'Execute error: At command `' .. command.command .. '` ( index ' .. i .. ' ) ' .. execute_cache)); error_logs:close() end
+            if error_logs then error_logs:write(sformat('[ERROR][%s]: %s\n', ldate():fmt('%X'), 'At command `' .. command.command .. '` ( index ' .. i .. ' ) ' .. execute_cache)); error_logs:close() end
         end
 
         sleep(2500)
