@@ -400,7 +400,7 @@ local function execute(command)
             end
 
             sleep(2500)
-    
+
             if #caches.STORE_TILES == 0 then caches.STORE_TILES = scan(command, 'STORE') end
 
             caches.STATUS = 'STORING_ITEMS'
