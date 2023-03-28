@@ -366,10 +366,10 @@ local function execute(command)
         --- Take
         if findItem(command.item) ~= 200 then
             while not warp(fworld, fid) do
-                sleep(5000)
+                sleep(10000)
             end
 
-            sleep(2500)
+            sleep(5000)
 
             if #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
 
@@ -396,10 +396,10 @@ local function execute(command)
         --- Store
         if findItem(command.item) > 0 then
             while not warp(tworld, tid) do
-                sleep(5000)
+                sleep(10000)
             end
 
-            sleep(2500)
+            sleep(5000)
 
             if #caches.STORE_TILES == 0 then caches.STORE_TILES = scan(command, 'STORE') end
 
@@ -410,7 +410,7 @@ local function execute(command)
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
         end
 
-        sleep(1000)
+        sleep(5000)
     end
 
     if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
