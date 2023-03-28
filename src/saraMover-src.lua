@@ -335,7 +335,7 @@ local function execute(command)
                 if key == 'STATUS' then
                     local bot = getBot()
 
-                    webhook({ url = config.webhook, username = 'saraMover', content = sformat('[**%s**] %s: %s', bot.world, bot.name, value)})
+                    webhook({ url = config.webhook, avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/main/img/saraMover.png', username = 'saraMover', content = sformat('[**%s**] %s: %s', bot.world, bot.name, value)})
 
                     sleep(250)
                 end
