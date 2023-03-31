@@ -50,7 +50,7 @@ local config = {
 ---@field public WEBHOOK_DATA WebhookData
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.1', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.1a', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
@@ -335,9 +335,11 @@ local function execute(command)
                 if key == 'STATUS' then
                     local bot = getBot()
 
-                    webhook({ url = config.webhook, avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/main/img/saraMover.png', username = 'saraMover', content = sformat('[**%s**] %s: %s', bot.world, bot.name, value)})
+                    if bot then
+                        webhook({ url = config.webhook, avatar = 'https://raw.githubusercontent.com/junssekut/saraMover/main/img/saraMover.png', username = 'saraMover', content = sformat('[**%s**] %s: %s', bot.world, bot.name, value)})
 
-                    sleep(250)
+                        sleep(250)
+                    end
                 end
 
                 protected_caches[key] = value
