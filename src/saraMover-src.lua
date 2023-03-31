@@ -211,7 +211,7 @@ local function take(command, fworld, fid, tiles)
                 local object_x, object_y = mfloor(object.x * ( 1 / 32 )), mfloor(object.y * ( 1 / 32 ))
 
                 if not findPath(object_x, object_y) then
-                    sleep(500)
+                    sleep(1000)
                 else
                     sleep(200)
 
@@ -395,6 +395,8 @@ local function execute(command)
             if not took then caches.STATUS = 'ITEMS_EMPTY'; break end
 
             caches.ITEMS_TOOK = caches.ITEMS_TOOK + (count == -1 and 0 or count)
+
+            sleep(5000)
         end
 
         --- Store
@@ -412,9 +414,11 @@ local function execute(command)
             local _, count = store(command, tworld, tid, caches.STORE_TILES)
 
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
+
+            sleep(5000)
         end
 
-        sleep(5000)
+        sleep(1000)
     end
 
     if caches.ITEMS_TOOK > caches.ITEMS_STORED then caches.ITEMS_TOOK = caches.ITEMS_STORED end
