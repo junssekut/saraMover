@@ -68,6 +68,7 @@ local getTile = _G.getTile
 local getObjects = _G.getObjects
 local findPath = _G.findPath
 local findItem = _G.findItem
+local collect = _G.collect
 local sleep = _G.sleep
 local webhook = _G.webhook
 
@@ -216,7 +217,8 @@ local function take(command, fworld, fid, tiles)
 
                     check_connection(fworld, fid, object_x, object_y, true)
 
-                    pcollect(object.oid, object.x, object.y)
+                    collect(1)
+                    -- pcollect(object.oid, object.x, object.y)
 
                     sleep(200)
 
