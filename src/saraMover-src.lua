@@ -50,7 +50,7 @@ local config = {
 ---@field public WEBHOOK_DATA WebhookData
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.1c', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.2', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
