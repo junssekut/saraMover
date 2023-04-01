@@ -203,6 +203,8 @@ local function take(command, fworld, fid, tiles)
 
     if take_option == 'w' then
         for _, object in pairs(getObjects()) do
+            if findItem(command.item) == 200 then break end
+            
             if object.id == command.item then
                 local object_x, object_y = mfloor(object.x * ( 1 / 32 )), mfloor(object.y * ( 1 / 32 ))
 
@@ -363,7 +365,7 @@ local function execute(command)
                 sleep(5000)
             end
 
-            if #caches.TAKE_TILES == 0 and command.command ~= 'wtw' then caches.TAKE_TILES = scan(command, 'TAKE') end
+            if command.command:sub(0, 1) ~= 'w' and #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
 
             caches.STATUS = 'TAKING_ITEMS'
 
