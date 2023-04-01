@@ -141,8 +141,6 @@ local function scan(command, scan_option)
     ---@type TileScanned[]
     local tiles = {}
 
-    if scan_option == 'TAKE' and command.command == 'wtw' then return tiles end
-
     if scan_option == 'STORE' and command.command:sub(-1) == 'w' then
         if command.background == 0 then
             local white_door = getwdoor()
@@ -365,7 +363,7 @@ local function execute(command)
                 sleep(5000)
             end
 
-            if #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
+            if #caches.TAKE_TILES == 0 and command.command ~= 'wtw' then caches.TAKE_TILES = scan(command, 'TAKE') end
 
             caches.STATUS = 'TAKING_ITEMS'
 
