@@ -205,10 +205,7 @@ local function take(command, fworld, fid, tiles)
 
     if take_option == 'w' then
         for _, object in pairs(getObjects()) do
-
             if object.id == command.item then
-                if findItem(object.id) == 200 then break end
-
                 local object_x, object_y = mfloor(object.x * ( 1 / 32 )), mfloor(object.y * ( 1 / 32 ))
 
                 if findPath(object_x, object_y) then
@@ -221,7 +218,7 @@ local function take(command, fworld, fid, tiles)
 
                     sleep(200)
 
-                    if findItem(object.id) == 200 then break end
+                    if findItem(command.item) == 200 then break end
                 end
             end
         end
