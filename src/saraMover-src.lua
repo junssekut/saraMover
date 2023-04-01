@@ -50,7 +50,7 @@ local config = {
 ---@field public WEBHOOK_DATA WebhookData
 
 ---@class saraMover
-local saraMover = { _VERSION = '1.1b', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
+local saraMover = { _VERSION = '1.1c', _AUTHOR = 'junssekut#4964', _CONTRIBUTORS = {} }
 
 local saraCore = assert(load(request('GET', 'https://raw.githubusercontent.com/junssekut/saraCore/main/src/saraCore.lua'))())
 
@@ -211,15 +211,13 @@ local function take(command, fworld, fid, tiles)
 
                 local object_x, object_y = mfloor(object.x * ( 1 / 32 )), mfloor(object.y * ( 1 / 32 ))
 
-                if not findPath(object_x, object_y) then
-                    sleep(1000)
-                else
+                if findPath(object_x, object_y) then
                     sleep(200)
 
                     check_connection(fworld, fid, object_x, object_y, true)
 
-                    collect(1)
-                    -- pcollect(object.oid, object.x, object.y)
+                    -- collect(1)
+                    pcollect(object.oid, object.x, object.y)
 
                     sleep(200)
 
@@ -241,9 +239,7 @@ local function take(command, fworld, fid, tiles)
             local tile = tiles[i] ---@diagnostic disable-line: need-check-nil
 
             if tile and tile.data == command.item then
-                if not findPath(tile.x, tile.y) then
-                    sleep(500)
-                else
+                if findPath(tile.x, tile.y) then
                     sleep(200)
 
                     check_connection(fworld, fid, tile.x, tile.y, true)
@@ -287,23 +283,21 @@ local function store(command, tworld, tid, tiles)
 
         local tile = tiles[i]
         local x, y = tile.x, tile.y
+        local valid = true
 
-        if store_option == 'w' then x = x + 1 end
+        if store_option == 'w' then valid = not full(x, y); x = x + 1; end
 
-        if (store_option == 'w' and (not full(x, y)) or true) then
-            if not findPath(x, y) then
-                sleep(500)
-            else
-                sleep(200)
+        if valid and findPath(x, y) then
+            sleep(200)
 
-                check_connection(tworld, tid, x, y, true)
+            check_connection(tworld, tid, x, y, true)
 
-                if store_option == 'w' then drop(command.item) end
-                if store_option == 'v' then vend(command.item, x, y) end
+            if store_option == 'w' then drop(command.item) end
+            if store_option == 'v' then vend(command.item, x, y) end
 
-                if findItem(command.item) == 0 then break end
-            end
+            if findItem(command.item) == 0 then break end
         end
+
     end
 
     return findItem(command.item) == 0, item_count
@@ -371,10 +365,8 @@ local function execute(command)
         --- Take
         if findItem(command.item) ~= 200 then
             while not warp(fworld, fid) do
-                sleep(10000)
+                sleep(5000)
             end
-
-            sleep(5000)
 
             if #caches.TAKE_TILES == 0 then caches.TAKE_TILES = scan(command, 'TAKE') end
 
@@ -397,16 +389,14 @@ local function execute(command)
 
             caches.ITEMS_TOOK = caches.ITEMS_TOOK + (count == -1 and 0 or count)
 
-            sleep(5000)
+            sleep(1000)
         end
 
         --- Store
         if findItem(command.item) > 0 then
             while not warp(tworld, tid) do
-                sleep(10000)
+                sleep(5000)
             end
-
-            sleep(5000)
 
             if #caches.STORE_TILES == 0 then caches.STORE_TILES = scan(command, 'STORE') end
 
@@ -416,7 +406,7 @@ local function execute(command)
 
             caches.ITEMS_STORED = caches.ITEMS_STORED + count
 
-            sleep(5000)
+            sleep(1000)
         end
 
         sleep(1000)
