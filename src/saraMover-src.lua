@@ -68,7 +68,6 @@ local getTile = _G.getTile
 local getObjects = _G.getObjects
 local findPath = _G.findPath
 local findItem = _G.findItem
-local collect = _G.collect
 local sleep = _G.sleep
 local webhook = _G.webhook
 
